@@ -8,8 +8,3 @@
   entry: scripts/xmlstarlet-format.sh
   language: script
   files: \.xml$
-- id: attribute-in-line
-  name: Put each attribute in its own line
-  entry: scripts/each-attribute-in-line.sh
-  language: script
-  files: \.xml$
