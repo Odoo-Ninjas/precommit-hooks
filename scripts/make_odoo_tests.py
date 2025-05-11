@@ -22,7 +22,7 @@ env:
   GIMERA_NON_THREADED: 1
   GIMERA_NO_PRECOMMIT: 1
   GIMERA_QUIET: 1
-jobs:
+jobs: {}
 """
 
 workflows = {
