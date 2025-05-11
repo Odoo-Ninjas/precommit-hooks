@@ -8,3 +8,10 @@
   entry: scripts/xmlstarlet-format.sh
   language: script
   files: \.xml$
+- id: make_odoo_robot_tests_githubworkflow
+  name: Creates a github workflow for unit and robotests
+  entry: bash -c 'python3 scripts/make_odoo_tests.py'        
+  language: system
+  pass_filenames: false
+  always_run: true
+  args: []
