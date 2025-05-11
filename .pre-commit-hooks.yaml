@@ -11,7 +11,7 @@
 - id: make_odoo_robot_tests_githubworkflow
   name: Creates a github workflow for unit and robotests
   entry: scripts/make_odoo_tests.py      
-  language: system
+  language: script
   pass_filenames: false
   always_run: true
   args: []
