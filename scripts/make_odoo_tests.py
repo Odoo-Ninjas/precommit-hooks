@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Generates output file containing unit and robo tests
 # The output should look like this:
 
