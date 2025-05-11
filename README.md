@@ -22,6 +22,17 @@ Sorts XML element attributes alphabetically using XSLT, and then formats the res
 - **Effect:** Alphabetically orders attributes in each element and formats
 - **Requirement:** `xsltproc`, `xmlstarlet`
 
+### 3. `github-workflow for robo and unit tests`
+
+```
+  - repo: https://github.com/Odoo-Ninjas/precommit-hooks
+    rev: main
+    hooks:
+      - id: make_odoo_robot_tests_githubworkflow
+        args:
+          - .github/workflows/testing.yml
+```
+
 ---
 
 ## 🔧 Usage
