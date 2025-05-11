@@ -35,8 +35,8 @@ current_dir = Path(
 )
 
 file = Path(sys.argv[1])
-import pudb;pudb.set_trace()
 if not file.exists():
+  print(f"Creating not existing file: {file}")
   file.write_text(template)
 
 parsed = yaml.safe_load(file.read_text())
