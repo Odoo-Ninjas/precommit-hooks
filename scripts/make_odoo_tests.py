@@ -35,6 +35,7 @@ current_dir = Path(
 )
 
 file = Path(sys.argv[1])
+import pudb;pudb.set_trace()
 if not file.exists():
   file.write_text(template)
 
