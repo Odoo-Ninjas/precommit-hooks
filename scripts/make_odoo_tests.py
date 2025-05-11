@@ -85,10 +85,10 @@ def update_files(ttype="robo", listcmd=None):
 
         parsed["jobs"][techname] = {
             "uses": workflow,
-            "concurrency": {
-                "group": f"${{{{ github.workflow }}}}-${{{{ github.ref }}}}-{case}",
-                "cancel-in-progress": True,
-            },
+            # "concurrency": {
+            #     "group": f"${{{{ github.workflow }}}}-${{{{ github.ref }}}}-{case}",
+            #     "cancel-in-progress": True,
+            # },
             "with": params,
         }
     parsed["jobs"][f"all_{ttype}tests"] = {
