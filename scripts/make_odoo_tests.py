@@ -15,7 +15,7 @@ template = """
 name: testing and deployments
 'on':
   push:
-    branches-ignore: null
+      branches-ignore: null
 permissions: write-all
 env:
   GIMERA_NON_INTERACTIVE: 1
@@ -35,9 +35,10 @@ current_dir = Path(
 )
 
 file = Path(sys.argv[1])
+TIMEOUT = int(sys.argv[2])
 if not file.exists():
-  print(f"Creating not existing file: {file}")
-  file.write_text(template)
+    print(f"Creating not existing file: {file}")
+    file.write_text(template)
 
 parsed = yaml.safe_load(file.read_text())
 
@@ -80,8 +81,6 @@ def update_files(ttype="robo", listcmd=None):
             "projectname": projectname,
             "testfile": case,
         }
-        if ttype == "robo":
-            params["timeout"] = 140
 
         parsed["jobs"][techname] = {
             "uses": workflow,
@@ -95,6 +94,7 @@ def update_files(ttype="robo", listcmd=None):
         "name": "All robotests done",
         "needs": list(technames),
         "runs-on": "self-hosted",
+        "timeout-minutes": TIMEOUT,
         "steps": [
             {"name": "good", "run": 'echo f"All {ttype} done"'},
         ],
