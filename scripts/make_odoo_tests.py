@@ -36,6 +36,10 @@ current_dir = Path(
 
 file = Path(sys.argv[1])
 TIMEOUT = int(sys.argv[2])
+try:
+    MAX_RETRIES = int(sys.argv[3])
+except:
+    MAX_RETRIES = 10
 if not file.exists():
     print(f"Creating not existing file: {file}")
     file.write_text(template)
@@ -95,6 +99,7 @@ def update_files(ttype="robo", listcmd=None):
         "needs": list(technames),
         "runs-on": "self-hosted",
         "timeout-minutes": TIMEOUT,
+        "retry": {"max-attempts": MAX_RETRIES},
         "steps": [
             {"name": "good", "run": 'echo f"All {ttype} done"'},
         ],
