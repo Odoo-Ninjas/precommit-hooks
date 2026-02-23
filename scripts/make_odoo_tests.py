@@ -2,6 +2,10 @@
 # Generates output file containing unit and robo tests
 # The output should look like this:
 
+import sys
+print("PYTHON EXECUTABLE:", sys.executable)
+print("SYS.PATH:", sys.path)
+
 from pathlib import Path
 import yaml
 import subprocess
