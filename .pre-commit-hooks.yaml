@@ -1,16 +1,16 @@
 - id: sort-xml
   name: Sort XML attributes using XSLT
-  entry: scripts/sort-xml.sh
+  entry: sort-xml.sh
   language: script
   files: \.xml$
 - id: xmlstarlet-format
   name: Format XML using xmlstarlet
-  entry: scripts/xmlstarlet-format.sh
+  entry: xmlstarlet-format.sh
   language: script
   files: \.xml$
 - id: make_odoo_robot_tests_githubworkflow
   name: Creates a github workflow for unit and robotests
-  entry: scripts/make_odoo_tests.py      
+  entry: make-odoo-robot-tests-githubworkflow
   language: python
   pass_filenames: false
   always_run: true
