@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zync-precommit-hooks"
+version = "0.0.0"
+dependencies = ["pyyaml"]
+
+[project.scripts]
+make-odoo-robot-tests = "scripts.make_odoo_tests:main"
