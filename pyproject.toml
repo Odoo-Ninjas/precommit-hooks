@@ -8,4 +8,4 @@ version = "0.0.0"
 dependencies = ["pyyaml"]
 
 [project.scripts]
-make-odoo-robot-tests = "scripts.make_odoo_tests:main"
+make-odoo-robot-tests = "precommit_hooks.make_odoo_tests:main"
