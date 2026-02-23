@@ -12,8 +12,6 @@
   name: Creates a github workflow for unit and robotests
   entry: scripts/make_odoo_tests.py      
   language: python
-  additional_dependencies:
-    - pyyaml
   pass_filenames: false
   always_run: true
   args: []
