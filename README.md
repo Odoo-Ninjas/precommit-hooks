@@ -31,6 +31,7 @@ Sorts XML element attributes alphabetically using XSLT, and then formats the res
       - id: make_odoo_robot_tests_githubworkflow
         args:
           - .github/workflows/testing.yml
+          - "20"
 ```
 
 ---
