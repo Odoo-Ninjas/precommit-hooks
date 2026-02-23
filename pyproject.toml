@@ -6,3 +6,6 @@ build-backend = "setuptools.build_meta"
 name = "odoo-ninjas-precommit-hooks"
 version = "0.0.0"
 dependencies = ["pyyaml"]
+
+[project.scripts]
+make-odoo-robot-tests-githubworkflow = "odoo_ninjas_hooks.make_odoo_tests:main"
