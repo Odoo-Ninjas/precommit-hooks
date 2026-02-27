@@ -101,7 +101,6 @@ def main():
             "needs": list(technames),
             "runs-on": "self-hosted",
             "timeout-minutes": TIMEOUT,
-            "retry": {"max-attempts": MAX_RETRIES},
             "steps": [
                 {"name": "good", "run": 'echo f"All {ttype} done"'},
             ],
