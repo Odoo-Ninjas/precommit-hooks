@@ -28,8 +28,8 @@ def main():
     """
 
     workflows = {
-        "robo": "Odoo-Ninjas/git-workflows/.github/workflows/robotests.yml@v9.3",
-        "unit": "Odoo-Ninjas/git-workflows/.github/workflows/unittests.yml@v9.3",
+        "robo": "Odoo-Ninjas/git-workflows/.github/workflows/robotests.yml@v9.4",
+        "unit": "Odoo-Ninjas/git-workflows/.github/workflows/unittests.yml@v9.4",
     }
 
     current_dir = Path(
