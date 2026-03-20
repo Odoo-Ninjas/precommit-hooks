@@ -29,9 +29,9 @@ def main():
     """
 
     workflows = {
-        "robo": "Odoo-Ninjas/git-workflows/.github/workflows/robotests.yml@v9.11",
-        "unit": "Odoo-Ninjas/git-workflows/.github/workflows/unittests.yml@v9.11",
-        "prepare_db": "Odoo-Ninjas/git-workflows/.github/workflows/prepare_test_db.yml@v9.11",
+        "robo": "Odoo-Ninjas/git-workflows/.github/workflows/robotests.yml@v9.12",
+        "unit": "Odoo-Ninjas/git-workflows/.github/workflows/unittests.yml@v9.12",
+        "prepare_db": "Odoo-Ninjas/git-workflows/.github/workflows/prepare_test_db.yml@v9.12",
     }
 
     current_dir = Path(
@@ -48,6 +48,8 @@ def main():
                         help="Shared filesystem path for prepared database dumps (e.g. /home/githubrunner/runner.shared)")
     parser.add_argument("--extra-modules", type=str, default="",
                         help="Additional modules to install on top of MANIFEST['install'] (e.g. 'robot_utils crm sale_management')")
+    parser.add_argument("--uninstall-modules", type=str, default="",
+                        help="Modules to uninstall before backup (e.g. 'partner_autocomplete')")
     args = parser.parse_args()
 
     file = Path(args.file)
@@ -143,6 +145,8 @@ def main():
         }
         if args.extra_modules:
             prepare_params["extra_modules"] = args.extra_modules
+        if args.uninstall_modules:
+            prepare_params["uninstall_modules"] = args.uninstall_modules
         parsed["jobs"]["prepare_test_db"] = {
             "uses": workflows["prepare_db"],
             "with": prepare_params,
