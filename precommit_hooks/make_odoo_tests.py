@@ -29,9 +29,10 @@ def main():
     """
 
     workflows = {
-        "robo": "Odoo-Ninjas/git-workflows/.github/workflows/robotests.yml@v9.13",
-        "unit": "Odoo-Ninjas/git-workflows/.github/workflows/unittests.yml@v9.13",
-        "prepare_db": "Odoo-Ninjas/git-workflows/.github/workflows/prepare_test_db.yml@v9.13",
+        "robo": "Odoo-Ninjas/git-workflows/.github/workflows/robotests.yml@v9.14",
+        "unit": "Odoo-Ninjas/git-workflows/.github/workflows/unittests.yml@v9.14",
+        "prepare_db": "Odoo-Ninjas/git-workflows/.github/workflows/prepare_test_db.yml@v9.14",
+        "prepare_sources": "Odoo-Ninjas/git-workflows/.github/workflows/prepare_sources.yml@v9.14",
     }
 
     current_dir = Path(
@@ -73,12 +74,15 @@ def main():
 
         if combined:
             techname = f"{PREFIX}all"
+            with_params = {
+                "enabled": True,
+                "projectname": f"all_{ttype}tests-${{{{ github.ref_name }}}}",
+            }
+            if shared_dir:
+                with_params["shared_dir"] = shared_dir
             parsed["jobs"][techname] = {
                 "uses": workflow,
-                "with": {
-                    "enabled": True,
-                    "projectname": f"all_{ttype}tests-${{{{ github.ref_name }}}}",
-                },
+                "with": with_params,
             }
             if needs_jobs:
                 parsed["jobs"][techname]["needs"] = list(needs_jobs)
@@ -134,9 +138,21 @@ def main():
             ],
         }
 
-    # generate prepare_test_db job if shared_dir is set
+    # generate prepare_sources + prepare_test_db jobs if shared_dir is set
     robo_needs = []
+    unit_needs = []
     if args.shared_dir:
+        # prepare_sources: gimera apply + cache sources
+        parsed["jobs"].pop("prepare_sources", None)
+        parsed["jobs"]["prepare_sources"] = {
+            "uses": workflows["prepare_sources"],
+            "with": {
+                "enabled": True,
+                "shared_dir": args.shared_dir,
+            },
+        }
+
+        # prepare_test_db: uses cached sources, prepares DB dump
         parsed["jobs"].pop("prepare_test_db", None)
         prepare_params = {
             "enabled": True,
@@ -150,11 +166,14 @@ def main():
         parsed["jobs"]["prepare_test_db"] = {
             "uses": workflows["prepare_db"],
             "with": prepare_params,
+            "needs": ["prepare_sources"],
         }
         robo_needs = ["prepare_test_db"]
+        unit_needs = ["prepare_sources"]
 
     update_files("robo", ["odoo", "robot", "list"], shared_dir=args.shared_dir, needs_jobs=robo_needs)
-    update_files("unit", ["odoo", "list-unit-test-files", "-m"], combined=args.combined_unittests)
+    update_files("unit", ["odoo", "list-unit-test-files", "-m"], combined=args.combined_unittests,
+                 shared_dir=args.shared_dir, needs_jobs=unit_needs)
 
     file.write_text(yaml.dump(parsed, sort_keys=False))
 
