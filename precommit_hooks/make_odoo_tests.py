@@ -31,6 +31,7 @@ def main():
     workflows = {
         "robo": "Odoo-Ninjas/git-workflows/.github/workflows/robotests.yml@v9.5",
         "unit": "Odoo-Ninjas/git-workflows/.github/workflows/unittests.yml@v9.5",
+        "prepare_db": "Odoo-Ninjas/git-workflows/.github/workflows/prepare_test_db.yml@v9.5",
     }
 
     current_dir = Path(
@@ -43,6 +44,10 @@ def main():
     parser.add_argument("max_retries", type=int, nargs="?", default=10, help="Max retries")
     parser.add_argument("--combined-unittests", action="store_true",
                         help="Run all unit tests combined in a single job via 'odoo -f run-tests' instead of splitting per file")
+    parser.add_argument("--shared-dir", type=str, default="",
+                        help="Shared filesystem path for prepared database dumps (e.g. /home/githubrunner/runner.shared)")
+    parser.add_argument("--prepare-modules", type=str, default="",
+                        help="Space-separated modules to pre-install in prepare_test_db job (e.g. 'robot_utils crm sale_management')")
     args = parser.parse_args()
 
     file = Path(args.file)
@@ -55,7 +60,7 @@ def main():
     parsed = yaml.safe_load(file.read_text())
 
 
-    def update_files(ttype="robo", listcmd=None, combined=False):
+    def update_files(ttype="robo", listcmd=None, combined=False, shared_dir="", needs_jobs=None):
         workflow = workflows[ttype]
         PREFIX = f"run_{ttype}_"
 
@@ -73,6 +78,8 @@ def main():
                     "projectname": f"all_{ttype}tests-${{{{ github.ref_name }}}}",
                 },
             }
+            if needs_jobs:
+                parsed["jobs"][techname]["needs"] = list(needs_jobs)
             technames = [techname]
         else:
             test_cases = list(
@@ -104,11 +111,16 @@ def main():
                     "projectname": projectname,
                     "testfile": case,
                 }
+                if shared_dir:
+                    params["shared_dir"] = shared_dir
 
-                parsed["jobs"][techname] = {
+                job = {
                     "uses": workflow,
                     "with": params,
                 }
+                if needs_jobs:
+                    job["needs"] = list(needs_jobs)
+                parsed["jobs"][techname] = job
 
         parsed["jobs"][f"all_{ttype}tests"] = {
             "name": f"All {ttype}tests done",
@@ -120,8 +132,22 @@ def main():
             ],
         }
 
+    # generate prepare_test_db job if shared_dir and prepare_modules are set
+    robo_needs = []
+    if args.shared_dir and args.prepare_modules:
+        parsed["jobs"].pop("prepare_test_db", None)
+        parsed["jobs"]["prepare_test_db"] = {
+            "uses": workflows["prepare_db"],
+            "with": {
+                "enabled": True,
+                "projectname": f"prepare_test_db-${{{{ github.ref_name }}}}",
+                "modules": args.prepare_modules,
+                "shared_dir": args.shared_dir,
+            },
+        }
+        robo_needs = ["prepare_test_db"]
 
-    update_files("robo", ["odoo", "robot", "list"])
+    update_files("robo", ["odoo", "robot", "list"], shared_dir=args.shared_dir, needs_jobs=robo_needs)
     update_files("unit", ["odoo", "list-unit-test-files", "-m"], combined=args.combined_unittests)
 
     file.write_text(yaml.dump(parsed, sort_keys=False))
