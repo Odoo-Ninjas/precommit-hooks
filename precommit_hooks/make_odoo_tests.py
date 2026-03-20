@@ -29,9 +29,9 @@ def main():
     """
 
     workflows = {
-        "robo": "Odoo-Ninjas/git-workflows/.github/workflows/robotests.yml@v9.6",
-        "unit": "Odoo-Ninjas/git-workflows/.github/workflows/unittests.yml@v9.6",
-        "prepare_db": "Odoo-Ninjas/git-workflows/.github/workflows/prepare_test_db.yml@v9.6",
+        "robo": "Odoo-Ninjas/git-workflows/.github/workflows/robotests.yml@v9.7",
+        "unit": "Odoo-Ninjas/git-workflows/.github/workflows/unittests.yml@v9.7",
+        "prepare_db": "Odoo-Ninjas/git-workflows/.github/workflows/prepare_test_db.yml@v9.7",
     }
 
     current_dir = Path(
