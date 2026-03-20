@@ -29,9 +29,9 @@ def main():
     """
 
     workflows = {
-        "robo": "Odoo-Ninjas/git-workflows/.github/workflows/robotests.yml@v9.7",
-        "unit": "Odoo-Ninjas/git-workflows/.github/workflows/unittests.yml@v9.7",
-        "prepare_db": "Odoo-Ninjas/git-workflows/.github/workflows/prepare_test_db.yml@v9.7",
+        "robo": "Odoo-Ninjas/git-workflows/.github/workflows/robotests.yml@v9.8",
+        "unit": "Odoo-Ninjas/git-workflows/.github/workflows/unittests.yml@v9.8",
+        "prepare_db": "Odoo-Ninjas/git-workflows/.github/workflows/prepare_test_db.yml@v9.8",
     }
 
     current_dir = Path(
@@ -46,8 +46,8 @@ def main():
                         help="Run all unit tests combined in a single job via 'odoo -f run-tests' instead of splitting per file")
     parser.add_argument("--shared-dir", type=str, default="",
                         help="Shared filesystem path for prepared database dumps (e.g. /home/githubrunner/runner.shared)")
-    parser.add_argument("--prepare-modules", type=str, default="",
-                        help="Space-separated modules to pre-install in prepare_test_db job (e.g. 'robot_utils crm sale_management')")
+    parser.add_argument("--extra-modules", type=str, default="",
+                        help="Additional modules to install on top of MANIFEST['install'] (e.g. 'robot_utils crm sale_management')")
     args = parser.parse_args()
 
     file = Path(args.file)
@@ -132,18 +132,20 @@ def main():
             ],
         }
 
-    # generate prepare_test_db job if shared_dir and prepare_modules are set
+    # generate prepare_test_db job if shared_dir is set
     robo_needs = []
-    if args.shared_dir and args.prepare_modules:
+    if args.shared_dir:
         parsed["jobs"].pop("prepare_test_db", None)
+        prepare_params = {
+            "enabled": True,
+            "projectname": f"prepare_test_db-${{{{ github.ref_name }}}}",
+            "shared_dir": args.shared_dir,
+        }
+        if args.extra_modules:
+            prepare_params["extra_modules"] = args.extra_modules
         parsed["jobs"]["prepare_test_db"] = {
             "uses": workflows["prepare_db"],
-            "with": {
-                "enabled": True,
-                "projectname": f"prepare_test_db-${{{{ github.ref_name }}}}",
-                "modules": args.prepare_modules,
-                "shared_dir": args.shared_dir,
-            },
+            "with": prepare_params,
         }
         robo_needs = ["prepare_test_db"]
 
